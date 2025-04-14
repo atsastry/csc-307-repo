@@ -60,13 +60,19 @@ app.get("/users/:id", (req, res) => {
 
 app.get("/users", (req, res) => {
   const name = req.query.name;
-  if (name != undefined) {
-    let result = findUserByName(name);
-    result = { users_list: result };
-    res.send(result);
-  } else {
-    res.send(users);
+  const job = req.query.job;
+
+  let filteredUsers = users.users_list;
+
+  if (name) {
+    filteredUsers = filteredUsers.filter(user => user.name === name);
   }
+  
+  if (job) {
+    filteredUsers = filteredUsers.filter(user => user.job === job);
+  }
+  
+  res.send({ users_list: filteredUsers }); 
 });
 
 const addUser = (user) => {
@@ -74,10 +80,30 @@ const addUser = (user) => {
   return user;
 };
 
+const deleteUserById = (id) => {
+  const userIndex = users.users_list.findIndex(user => user.id === id);
+  if (userIndex === -1) {
+    return false; // user not found
+  }
+  users.users_list.splice(userIndex, 1); // remove user
+  return true; // user deleted
+};
+
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
   res.send();
+});
+
+app.delete("/users/:id", (req, res) => {
+  const id = req.params["id"];
+  const wasDeleted = deleteUserById(id);
+    
+  if (!wasDeleted) {
+    res.status(404).send("user not found.");
+  } else {
+    res.status(204).send(); // SUCCESS - no content
+  }
 });
 
 app.listen(port, () => {
