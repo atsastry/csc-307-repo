@@ -44,6 +44,19 @@ const findUserByName = (name) => {
   );
 };
 
+const generateRandomId = () => {
+  return Math.random().toString(36).substring(2, 9);
+};
+
+const addUser = (user) => {
+  const newUser = {
+    ...user, 
+    id: generateRandomId()
+  };
+  users["users_list"].push(newUser);
+  return newUser;
+};
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 }); 
@@ -78,10 +91,10 @@ app.get("/users", (req, res) => {
   res.send({ users_list: filteredUsers }); 
 });
 
-const addUser = (user) => {
-  users["users_list"].push(user);
-  return user;
-};
+// const addUser = (user) => {
+//  users["users_list"].push(user);
+//  return user;
+// };
 
 const deleteUserById = (id) => {
   const userIndex = users.users_list.findIndex(user => user.id === id);
@@ -94,8 +107,8 @@ const deleteUserById = (id) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  const addedUser = addUser(userToAdd);
+  res.status(201).json(addedUser); // 201 and return successfully created object
 });
 
 app.delete("/users/:id", (req, res) => {
@@ -107,6 +120,12 @@ app.delete("/users/:id", (req, res) => {
   } else {
     res.status(204).send(); // SUCCESS - no content
   }
+});
+
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  const addedUser = addUser(userToAdd);
+  res.status(201).json(addedUser); // send back user with new ID
 });
 
 app.listen(port, () => {
