@@ -108,7 +108,7 @@ const deleteUserById = (id) => {
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   const addedUser = addUser(userToAdd);
-  res.status(201).json(addedUser); // 201 and return successfully created object
+  res.status(201).json(addedUser); // sends back new user w generated ID 
 });
 
 app.delete("/users/:id", (req, res) => {

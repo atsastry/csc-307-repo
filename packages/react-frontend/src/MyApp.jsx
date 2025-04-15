@@ -10,8 +10,25 @@ function MyApp() {
   }
 
   function removeOneCharacter(index) {
-    const updated = characters.filter((_, i) => i !== index);
-    setCharacters(updated);
+//    const updated = characters.filter((_, i) => i !== index);
+//    setCharacters(updated);
+      
+      const userToDelete = characters[index];
+      fetch(`http://localhost:8000/users/${userToDelete.id}`, {
+        method: "DELETE"
+      })
+        .then((res) => {
+	  if (res.status === 204) {
+	  // only update frontend if delete succsesfully went through
+	  const updated = characters.filter((_, i) => i !== index);
+	  setCharacters(updated);
+	  } else {
+	    console.error("delete failed");
+	  }
+        })
+	.catch((error) => {
+          console.error("Delete failed:", error);
+        });
   }
 
   function fetchUsers() {
