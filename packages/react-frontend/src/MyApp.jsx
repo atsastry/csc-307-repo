@@ -40,11 +40,20 @@ function MyApp() {
   
   function updateList(person) {
      postUser(person)
-        .then(() => setCharacters([...characters, person]))
-        .catch((error) => {
-	  console.log(error);
+        .then(res => {
+	  if (res.status === 201) {
+	    return res.json(); // getting newly created ID
+	  } else {
+	    throw new Error("Failed to create user");
+	  }
 	})
-  }
+	.then(newUser => {
+	  setCharacters([...characters, newUser]); // now includes ID
+	})
+	.catch(error => {
+	  console.log(error);
+	});
+   }
 
 
 return (
