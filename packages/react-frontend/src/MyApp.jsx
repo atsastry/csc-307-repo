@@ -9,26 +9,21 @@ function MyApp() {
     setCharacters([...characters, person]);
   }
 
-  function removeOneCharacter(index) {
-//    const updated = characters.filter((_, i) => i !== index);
-//    setCharacters(updated);
-      
-      const userToDelete = characters[index];
-      fetch(`http://localhost:8000/users/${userToDelete.id}`, {
-        method: "DELETE"
+  function removeOneCharacter(id) {
+    fetch(`http://localhost:8000/users/${id}`, {
+      method: "DELETE"
+    })
+      .then((res) => {
+        if (res.status === 204) {
+          const updated = characters.filter((user) => user._id !== id);
+          setCharacters(updated);
+        } else {
+          console.error("Delete failed");
+        }
       })
-        .then((res) => {
-	  if (res.status === 204) {
-	  // only update frontend if delete succsesfully went through
-	  const updated = characters.filter((_, i) => i !== index);
-	  setCharacters(updated);
-	  } else {
-	    console.error("delete failed");
-	  }
-        })
-	.catch((error) => {
-          console.error("Delete failed:", error);
-        });
+      .catch((error) => {
+        console.error("Delete failed:", error);
+      });
   }
 
   function fetchUsers() {
@@ -44,7 +39,7 @@ function MyApp() {
   }, [] );
 
   function postUser(person) {
-    const promise = fetch("Http://localhost:8000/users", {
+    const promise = fetch("http://localhost:8000/users", {
       method: "POST", 
       headers: {
         "Content-Type": "application/json", 
